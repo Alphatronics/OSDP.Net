@@ -9,7 +9,7 @@ internal class MySampleDevice : Device
 {
     protected override PayloadData HandleIdReport()
     {
-        return new DeviceIdentification([0x00, 0x00, 0x00], 0, 1, 0, 0, 0, 0);
+        return new DeviceIdentification(new byte[] { 0x00, 0x00, 0x00 }, 0, 1, 0, 0, 0, 0);
     }
 
     protected override PayloadData HandleDeviceCap(IncomingMessage command)
