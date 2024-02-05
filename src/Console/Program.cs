@@ -218,7 +218,7 @@ internal static class Program
         _controlPanel.RawCardDataReplyReceived += (_, args) =>
         {
             DisplayReceivedReply($"Received raw card data reply for address {args.Address}",
-                args.RawCardData.ToString());
+              args.RawCardData.ToString() + args.RawCardData.HexData + "\n" + args.RawCardData.AsciiData);
         };
         _controlPanel.KeypadReplyReceived += (_, args) =>
         {

@@ -54,12 +54,12 @@ namespace OSDP.Net.Model.ReplyData
 
         internal byte[] BuildData()
         {
-            return [(byte)Function, Compliance, NumberOf];
+            return new byte[] { (byte)Function, Compliance, NumberOf };
         }
 
         internal static DeviceCapability ParseData(byte[] data)
         {
-            var func = typeof(CapabilityFunction).IsEnumDefined((int)data[0]) 
+            var func = typeof(CapabilityFunction).IsEnumDefined((int)data[0])
                 ? (CapabilityFunction)data[0]
                 : CapabilityFunction.Unknown;
 
@@ -75,7 +75,7 @@ namespace OSDP.Net.Model.ReplyData
             return cap;
         }
 
-        private static Dictionary<CapabilityFunction, Func<DeviceCapability>> _capFactories = new ()
+        private static Dictionary<CapabilityFunction, Func<DeviceCapability>> _capFactories = new()
             {
                 {CapabilityFunction.CommunicationSecurity, () => new CommSecurityDeviceCap() },
                 {CapabilityFunction.ReceiveBufferSize, () => new RcvBuffSizeDeviceCap() },
@@ -101,12 +101,12 @@ namespace OSDP.Net.Model.ReplyData
     /// <summary>
     /// Receive Buffer Size PD capability
     /// </summary>
-    public class RcvBuffSizeDeviceCap : MsgSizeDeviceCap;
+    public class RcvBuffSizeDeviceCap : MsgSizeDeviceCap { }
 
     /// <summary>
     /// Largest Combined Message Size PD capability
     /// </summary>
-    public class LargestCombMsgSizeDeviceCap : MsgSizeDeviceCap;
+    public class LargestCombMsgSizeDeviceCap : MsgSizeDeviceCap { }
 
     /// <summary>
     /// Communication Security PD capability

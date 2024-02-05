@@ -45,7 +45,9 @@ public class RawCardData : PayloadData
     /// The raw card data.
     /// </summary>
     public BitArray Data { get; }
-    
+    public string HexData { get; private set; }
+    public string AsciiData { get; private set; }
+
     /// <inheritdoc/>
     public override byte Type => (byte)ReplyType.RawReaderData;
 
@@ -64,11 +66,17 @@ public class RawCardData : PayloadData
         }
 
         ushort bitCount = Message.ConvertBytesToUnsignedShort(new[] {dataArray[2], dataArray[3]});
-        var cardData = new BitArray(dataArray.Skip(4).Take(dataArray.Length - 4).Reverse().ToArray());
+        var cardDatabytes = dataArray.Skip(4).Take(dataArray.Length - 4);
+        var cardData = new BitArray(cardDatabytes.Reverse().ToArray());
+
         Reverse(cardData);
         cardData.Length = bitCount;
 
-        return new RawCardData(dataArray[0], (FormatCode)dataArray[1], cardData);
+        return new RawCardData(dataArray[0], (FormatCode)dataArray[1], cardData)
+        { 
+            HexData = BitConverter.ToString(cardDatabytes.ToArray()).Replace("-", ""),
+            AsciiData = Encoding.UTF8.GetString(cardDatabytes.ToArray())
+        };
     }
 
     /// <inheritdoc/>
