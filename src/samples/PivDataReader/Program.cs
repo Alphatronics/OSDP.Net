@@ -37,16 +37,16 @@ internal class Program
             Console.Write(
                 $"Device is {(eventArgs.IsConnected ? "Online" : "Offline")} in {(eventArgs.IsSecureChannelEstablished ? "Secure" : "Clear Text")} mode");
 
-            if (eventArgs.IsConnected)
-            {
-                await panel.ACUReceivedSize(_connectionId, deviceAddress, maximumReceiveSize);
-            }
+            //if (eventArgs.IsConnected)
+            //{
+            //    await panel.ACUReceivedSize(_connectionId, deviceAddress, maximumReceiveSize);
+            //}
         };
         panel.RawCardDataReplyReceived += (_, eventArgs) =>
         {
             Console.WriteLine();
             Console.WriteLine("Received raw card data");
-            Console.Write(eventArgs.RawCardData.ToString());
+            Console.Write(eventArgs.RawCardData.ToString() + eventArgs.RawCardData.HexData + "\n" + eventArgs.RawCardData.AsciiData);
         };
         panel.NakReplyReceived += (_, args) =>
         {
@@ -71,20 +71,24 @@ internal class Program
         while (!exit)
         {
             Console.WriteLine();
-            Console.WriteLine("PIV Data Reader");
+            Console.WriteLine("Data Reader");
             Console.WriteLine();
 
-            Console.WriteLine("1) Get PIV Data");
-            
+            Console.WriteLine("1) Get ID Report");
+            //Console.WriteLine("1) Get PIV Data");
+
             Console.WriteLine();
             Console.WriteLine("0) Exit");
             Console.WriteLine();
             Console.Write("Select an action:");
 
-            switch (Console.ReadKey(true).Key)
+            ConsoleKeyInfo key = default;
+            switch ((key= Console.ReadKey(true)).Key)
             {
                 case ConsoleKey.D1:
-                    await GetPivData();
+                case ConsoleKey.NumPad1:
+                    //await GetPivData();
+                    await GetIdReport();
                     break;
                 case ConsoleKey.D0:
                     exit = true;
@@ -97,7 +101,34 @@ internal class Program
         }
 
         await panel.Shutdown();
-        
+
+        async Task GetIdReport()
+        {
+
+            Console.WriteLine();
+            Console.Write("***Attempting to get Id Report***");
+            Console.WriteLine();
+
+            try
+            {
+                var data = await panel.IdReport(_connectionId, deviceAddress);
+
+                Console.Write(data);
+            }
+            catch (TimeoutException)
+            {
+                Console.WriteLine("Timeout waiting for Id Report");
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Exception: {exception}");
+            }
+
+            Console.WriteLine();
+            Console.Write("Press enter to continue");
+            Console.ReadLine();
+        }
+
         async Task GetPivData()
         {
             Console.Clear();
