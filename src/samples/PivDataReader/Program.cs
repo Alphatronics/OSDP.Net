@@ -75,6 +75,7 @@ internal class Program
             Console.WriteLine();
 
             Console.WriteLine("1) Get ID Report");
+            Console.WriteLine("2) Get Test LED");
             //Console.WriteLine("1) Get PIV Data");
 
             Console.WriteLine();
@@ -90,10 +91,16 @@ internal class Program
                     //await GetPivData();
                     await GetIdReport();
                     break;
+                case ConsoleKey.D2:
+                case ConsoleKey.NumPad2:
+                    //await GetPivData();
+                    await TestLed();
+                    break;
                 case ConsoleKey.D0:
                     exit = true;
                     break;
             }
+
 
             Console.WriteLine();
 
@@ -118,6 +125,49 @@ internal class Program
             catch (TimeoutException)
             {
                 Console.WriteLine("Timeout waiting for Id Report");
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Exception: {exception}");
+            }
+
+            Console.WriteLine();
+            Console.Write("Press enter to continue");
+            Console.ReadLine();
+        }
+
+        async Task TestLed()
+        {
+
+            Console.WriteLine();
+            Console.Write("***Test LED***");
+            Console.WriteLine();
+
+            try
+            {
+                //var readerLedControl = new ReaderLedControl(0, 0,
+                //     TemporaryReaderControlCode.SetTemporaryAndStartTimer,
+                //      10, 0, LedColor.Red, LedColor.Black, 30,
+                //       PermanentReaderControlCode.SetPermanentState,1,1, LedColor.Green, LedColor.Green
+                //    );
+                var readerLedControl = new ReaderLedControl(0, 0,
+                     TemporaryReaderControlCode.SetTemporaryAndStartTimer,
+                      10, 10, LedColor.Red, LedColor.Black, 200,
+                       PermanentReaderControlCode.Nop, 0, 0, LedColor.Black, LedColor.Black
+                    );
+              //  var readerLedControl = new ReaderLedControl(0, 0,
+              // TemporaryReaderControlCode.Nop,
+              //  0, 0, LedColor.Black, LedColor.Black, 0,
+              //   PermanentReaderControlCode.SetPermanentState, 1, 1, LedColor.Red, LedColor.Black
+              //);
+                var readerLedControls = new ReaderLedControls(new List<ReaderLedControl>() { readerLedControl });
+                var data = await panel.ReaderLedControl(_connectionId, deviceAddress, readerLedControls);
+
+                Console.Write(data);
+            }
+            catch (TimeoutException)
+            {
+                Console.WriteLine("Timeout waiting for testing LED");
             }
             catch (Exception exception)
             {
