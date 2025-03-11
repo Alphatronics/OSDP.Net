@@ -42,6 +42,12 @@ internal class Program
             //    await panel.ACUReceivedSize(_connectionId, deviceAddress, maximumReceiveSize);
             //}
         };
+        panel.KeypadReplyReceived += (_, eventArgs) =>
+        {
+            Console.WriteLine();
+            Console.WriteLine("Received keypad data");
+            Console.Write(eventArgs.KeypadData.ToString());
+        };
         panel.RawCardDataReplyReceived += (_, eventArgs) =>
         {
             Console.WriteLine();
@@ -62,7 +68,7 @@ internal class Program
         else
         {
             _connectionId = panel.StartConnection(new SerialPortOsdpConnection(portName, baudRate)
-                { ReplyTimeout = TimeSpan.FromSeconds(2) });
+                { ReplyTimeout = TimeSpan.FromSeconds(1) });
         }
         panel.AddDevice(_connectionId, deviceAddress, true, useSecureChannel, securityKey);
 
